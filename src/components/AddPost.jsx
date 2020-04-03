@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
+import { db, auth } from "../firebase";
 
 class AddPost extends Component {
-  state = { title: '', content: '' };
+  state = { title: "", content: "" };
 
   handleChange = event => {
     const { name, value } = event.target;
@@ -11,27 +12,28 @@ class AddPost extends Component {
   handleSubmit = event => {
     event.preventDefault();
 
-    const { onCreate } = this.props;
     const { title, content } = this.state;
+    const { uid, displayName, email, photoURL } = auth.currentUser || {};
 
     const post = {
-      id: Date.now().toString(),
       title,
       content,
       user: {
-        uid: '1111',
-        displayName: 'Steve Kinney',
-        email: 'steve@mailinator.com',
-        photoURL: 'http://placekitten.com/g/200/200',
+        uid,
+        displayName,
+        email,
+        photoURL
       },
       favorites: 0,
       comments: 0,
-      createdAt: new Date(),
-    }
+      createdAt: new Date()
+    };
 
-    onCreate(post);
+    console.log("CURRENT USER", auth.currentUser);
 
-    this.setState({ title: '', content: '' });
+    db.collection("posts").add(post);
+
+    this.setState({ title: "", content: "" });
   };
 
   render() {
